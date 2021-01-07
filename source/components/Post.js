@@ -9,10 +9,10 @@ import * as api from '../api/firebaseAPI';
 // 상태 이모티콘, 날짜, 요일 + 내용
 
 export default function Post({ navigation, route }) {
-  const { selectedDay, mode, content } = route.params; // 앞 화면에서 받아온 파라미터 사용
-  const [textInput, setTextInput] = useState(content); //포스트 텍스트 정보
-  const [selectedImage, setSelectedImage] = useState(""); // 선택한 이미지 정보
-
+  const { selectedDay, mode, readPostData, imageURL } = route.params; // 앞 화면에서 받아온 파라미터 사용
+  const [textInput, setTextInput] = useState(readPostData ? readPostData.content : ""); //포스트 텍스트 정보
+  const [selectedImage, setSelectedImage] = useState({ uri: "", name: "" }); // 선택한 이미지 정보
+  const [updateImageURL, setUpdateImageURL] = useState(imageURL); // 포스트 작성시 저장했던 이미지 정보 
   //console.log('test :::', Boolean(selectedImage));
 
   // ------------------  Image Picker API Config -------
@@ -52,10 +52,23 @@ export default function Post({ navigation, route }) {
   const handleSubmit = async (textInput, selectedDay, selectedImage) => {
     await api.createPost(textInput, selectedDay, selectedImage);
 
-    if (selectedImage) {
+    if (selectedImage.uri) {
       await api.uploadImage(selectedDay, selectedImage);
     }
+
     navigation.popToTop();
+  }
+
+  // 취소 버튼 이벤트
+  const handleCancle = () => {
+    console.log('Cancel!!');
+    setSelectedImage({ uri: "", name: "" });
+  }
+
+  const handledeleteImage = async () => {
+    await api.deleteImage(selectedDay, readPostData);
+    setUpdateImageURL("");
+    setSelectedImage({ uri: "", name: "" });
   }
 
 
@@ -72,12 +85,31 @@ export default function Post({ navigation, route }) {
             onChangeText={text => setTextInput(text)}
           />
         }
-        {selectedImage ?
+        {selectedImage.uri ?
           (<View style={styles.container}>
-            <Image
-              source={{ uri: selectedImage.uri }}
-              style={styles.thumbnail}
-            />
+            <View style={styles.imageContainer}>
+              <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0, zIndex: 1 }} onPress={() => handleCancle()}>
+                <Image style={styles.cancelIcon} source={require('../assets/cancel.png')} />
+              </TouchableOpacity>
+              <Image
+                source={{ uri: selectedImage.uri }}
+                style={styles.thumbnail}
+              />
+            </View>
+          </View>
+          ) : null
+        }
+        {updateImageURL ?
+          (<View style={styles.container}>
+            <View style={styles.imageContainer}>
+              <TouchableOpacity style={{ position: 'absolute', top: 0, right: 0, zIndex: 1 }} onPress={handledeleteImage}>
+                <Image style={styles.cancelIcon} source={require('../assets/cancel.png')} />
+              </TouchableOpacity>
+              <Image
+                source={{ uri: updateImageURL }}
+                style={styles.thumbnail}
+              />
+            </View>
           </View>
           ) : null
         }
@@ -88,7 +120,7 @@ export default function Post({ navigation, route }) {
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => handleSubmit(textInput, selectedDay, selectedImage)} >
-            <Image style={styles.icon} source={require('../assets/confirm.png')} />
+            <Image style={{ ...styles.icon, tintColor: '#bc6ff1' }} source={require('../assets/confirm.png')} />
           </TouchableOpacity>
         </View>
       </View>
@@ -102,13 +134,29 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#ffffff'
   },
+  imageContainer: {
+    marginTop: 10,
+    marginLeft: 10,
+    backgroundColor: '#eeeeee',
+    width: 100,
+    height: 100,
+    borderRadius: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
   textArea: {
     flex: 8,
 
   },
   textInput: {
     flex: 3,
-    borderColor: 'gray',
+    borderColor: 'rgba(0, 0, 0, 0.1)',
     borderWidth: 1,
     fontFamily: 'CuteFontRegular',
     fontSize: 30,
@@ -127,8 +175,14 @@ const styles = StyleSheet.create({
     height: 25,
     marginHorizontal: 10,
     marginTop: 20,
-    tintColor: '#ffd5cd',
+    tintColor: '#000000',
     resizeMode: 'center',
+  },
+  cancelIcon: {
+    width: 30,
+    height: 30,
+    tintColor: 'rgba(0, 0, 0, 0.3)',
+    resizeMode: 'center'
   },
   menuBar: {
     flex: .5,
@@ -136,7 +190,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderTopWidth: 1,
     borderTopColor: 'rgba(0, 0, 0, 0.1)',
-
   },
   thumbnail: {
     width: 100,

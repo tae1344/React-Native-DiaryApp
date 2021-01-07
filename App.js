@@ -46,7 +46,7 @@ export default function App() {
           name="Calendar"
           component={CalendarPage}
           options={{
-            headerTitle: "다이어리 앱!",
+            headerTitle: "다이어리 앱",
             headerTitleAlign: 'center',
             headerRight: () => (<Pressable onPress={() => alert('나중에 추가 될 기능이에요!')} title="Info"><Image style={styles.icon} source={require('./source/assets/options.png')} /></Pressable>)
           }} />

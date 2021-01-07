@@ -14,7 +14,7 @@ export default function PostListView({ navigation, posts }) {
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('PostRead', { selectedDay: item.date, mode: 'read' })}>
               <Text style={styles.text}>{item.date}</Text>
-              <Text style={styles.text}>{item.content}</Text>
+              <Text style={styles.text} numberOfLines={1}>{item.content}</Text>
             </TouchableOpacity>
           )}
           keyExtractor={item => item.date}
@@ -27,8 +27,8 @@ export default function PostListView({ navigation, posts }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F7F7F7',
-    marginTop: 60,
+    backgroundColor: '#f1f6f9',
+
   },
   item: {
     backgroundColor: '#fff',

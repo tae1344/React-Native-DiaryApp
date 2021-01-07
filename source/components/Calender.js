@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Pressable, View, StyleSheet, Text, Image } from 'react-native';
+import { TouchableOpacity, View, StyleSheet, Text, Image } from 'react-native';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 import ViewPager from '@react-native-community/viewpager';
 import PostListPage from './PostListView';
@@ -45,7 +45,7 @@ function CalenderPage({ navigation, route }) {
           selected: true,
           marked: true,
           customStyles: {
-            container: { backgroundColor: '#fff0f0' },
+            container: { backgroundColor: '#b088f9' },
             text: { color: 'black' }
           }
         };
@@ -81,11 +81,11 @@ function CalenderPage({ navigation, route }) {
 
             }}
           />
-        </View>
-        <View style={styles.subContainer}>
-          <Pressable style={styles.button} onPress={handleDirectBtn}>
-            <Image style={styles.icon} source={require('../assets/plus-solid.png')} />
-          </Pressable>
+          <View style={styles.subContainer}>
+            <TouchableOpacity onPress={handleDirectBtn}>
+              <Image style={styles.icon} source={require('../assets/plus-solid.png')} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
@@ -104,31 +104,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff'
   },
   subContainer: {
-    flex: 1,
+    width: 40,
+    height: 40,
+    backgroundColor: '#fff',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 30,
+    marginRight: 'auto',
+    marginBottom: 0,
+    marginLeft: 'auto',
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.20,
+    shadowRadius: 4.65,
+    elevation: 6,
   },
   calendar: {
     flex: 3,
     paddingVertical: 30
 
   },
-  button: {
-    width: 40,
-    height: 40,
-    marginTop: 0,
-    marginRight: 'auto',
-    marginBottom: 0,
-    marginLeft: 'auto',
-    borderColor: 'rgba(0,0,0,0.2)',
-    borderWidth: 1,
-
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   icon: {
     width: 30,
     height: 30,
-    tintColor: '#ffd5cd',
+    tintColor: '#bc6ff1',
     resizeMode: 'center',
   },
   viewPager: {

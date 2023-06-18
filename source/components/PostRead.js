@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, Modal, Alert } from 'react-native';
+import PostAPI from "../api/PostAPI";
+import ImageAPI from "../api/ImageAPI";
 
-import * as api from '../api/firebaseAPI';
 
 export default function PostRead({ navigation, route }) {
   const { selectedDay, mode } = route.params;
@@ -11,18 +12,17 @@ export default function PostRead({ navigation, route }) {
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    api.getOnePost(selectedDay, setReadPostData);
+    PostAPI.getOnePost(selectedDay, setReadPostData);
 
   }, []);
 
   useEffect(() => {
     if (readPostData.imageName) {
-      api.getImage(selectedDay, readPostData, setImageURL);
+      ImageAPI.getImage(selectedDay, readPostData, setImageURL);
     }
   }, [readPostData]);
 
 
-  //console.log("imageURL ::::", imageURL);
 
   useEffect(() => {
     // 네이게이션 헤더 설정
@@ -46,8 +46,8 @@ export default function PostRead({ navigation, route }) {
   }
   // 포스트 삭제
   const handleDelete = async () => {
-    await api.deletePost(selectedDay);
-    await api.deleteImage(selectedDay, readPostData);
+    await PostAPI.deletePost(selectedDay);
+    await ImageAPI.deleteImage(selectedDay, readPostData);
     navigation.popToTop();
   }
 

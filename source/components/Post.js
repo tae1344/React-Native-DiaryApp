@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, TextInput, Pressable, Image, Platform } from 'react-native';
-
-
 import * as ImagePicker from 'expo-image-picker';
-import * as api from '../api/firebaseAPI';
+import PostAPI from "../api/PostAPI";
+import ImageAPI from "../api/ImageAPI";
 
 // 시간 버튼, 이미지 버튼(imagePicker), 확인 버튼
 // 상태 이모티콘, 날짜, 요일 + 내용
@@ -12,10 +11,7 @@ export default function Post({ navigation, route }) {
   const { selectedDay, mode, readPostData, imageURL } = route.params; // 앞 화면에서 받아온 파라미터 사용
   const [textInput, setTextInput] = useState(readPostData ? readPostData.content : ""); //포스트 텍스트 정보
   const [selectedImage, setSelectedImage] = useState({ uri: "", name: "" }); // 선택한 이미지 정보
-  const [updateImageURL, setUpdateImageURL] = useState(imageURL); // 포스트 작성시 저장했던 이미지 정보 
-  //console.log('test :::', Boolean(selectedImage));
-
-  // ------------------  Image Picker API Config -------
+  const [updateImageURL, setUpdateImageURL] = useState(imageURL); // 포스트 작성시 저장했던 이미지 정보
 
   const handleImagePicker = async () => {
 
@@ -40,20 +36,16 @@ export default function Post({ navigation, route }) {
     } else {
       setSelectedImage({ uri: "", name: "" });
     }
-
-
   }
-
-  // ------------------ END ---------------------------------
 
 
 
   // 포스트 전송 이벤트
   const handleSubmit = async (textInput, selectedDay, selectedImage) => {
-    await api.createPost(textInput, selectedDay, selectedImage);
+    await PostAPI.createPost(textInput, selectedDay, selectedImage);
 
     if (selectedImage.uri) {
-      await api.uploadImage(selectedDay, selectedImage);
+      await ImageAPI.uploadImage(selectedDay, selectedImage);
     }
 
     navigation.popToTop();
@@ -66,7 +58,7 @@ export default function Post({ navigation, route }) {
   }
 
   const handledeleteImage = async () => {
-    await api.deleteImage(selectedDay, readPostData);
+    await ImageAPI.deleteImage(selectedDay, readPostData);
     setUpdateImageURL("");
     setSelectedImage({ uri: "", name: "" });
   }

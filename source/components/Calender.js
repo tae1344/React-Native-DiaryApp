@@ -3,9 +3,8 @@ import { TouchableOpacity, View, StyleSheet, Text, Image } from 'react-native';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 import ViewPager from '@react-native-community/viewpager';
 import PostListPage from './PostListView';
+import PostAPI from "../api/PostAPI";
 
-
-import * as api from '../api/firebaseAPI';
 
 function CalenderPage({ navigation, route }) {
   const [posts, setPosts] = useState({});
@@ -15,7 +14,7 @@ function CalenderPage({ navigation, route }) {
 
   // DB 데이터 가져오기
   useEffect(() => {
-    api.getPosts(setPosts);
+    PostAPI.getPosts(setPosts);
   }, []);
 
   console.log('posts ::', posts);

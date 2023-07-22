@@ -2,15 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { TouchableOpacity, View, StyleSheet, Text, Image } from 'react-native';
 import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
 import ViewPager from '@react-native-community/viewpager';
-import PostListPage from './PostListView';
-import PostAPI from "../api/PostAPI";
+import PostListPage from '@components/PostListView';
+import PostAPI from '@api/PostAPI';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from 'react-native-screens/native-stack';
+import { RootStackParamList } from '@/types/NavigatorTypes';
 
+type PropsType = NativeStackNavigationProp<RootStackParamList, 'MainTab'> & {};
 
-function CalenderPage({ navigation, route }) {
+function CalenderPage(props: PropsType) {
+  const navigation = useNavigation();
   const [posts, setPosts] = useState({});
 
   const today = new Date().toISOString().split('T')[0];
-
 
   // DB 데이터 가져오기
   useEffect(() => {
@@ -19,40 +23,40 @@ function CalenderPage({ navigation, route }) {
 
   console.log('posts ::', posts);
 
-  // 선택 날짜 포스트 작성
   const handleDayPress = async (day) => {
     if (posts && day.dateString in posts) {
-      // 읽기 모드(이미 포스트 작성된 날짜)
-      navigation.navigate('PostRead', { selectedDay: day.dateString, mode: 'read' });
+      navigation.navigate('PostRead', {
+        date: day.dateString,
+      });
     } else {
-      // 쓰기 모드 (포스트 된게 없는 날짜)
-      navigation.navigate('Post', { selectedDay: day.dateString, mode: 'write' });
+      navigation.navigate('PostWrite', {
+        date: day.dateString,
+      });
     }
-  }
+  };
 
   // 오늘 날짜 포스트 작성
   const handleDirectBtn = async () => {
-    navigation.navigate('Post', { selectedDay: today, mode: 'write' });
-  }
+    navigation.navigate('PostWrite', { date: today });
+  };
 
   // 포스트 된 날짜 데이터 가져오기
   const handlePostedDays = (posts) => {
-    let result = {};
+    const result = {};
     if (posts) {
-      for (let key in posts) {
+      for (const key in posts) {
         result[posts[key].date] = {
           selected: true,
           marked: true,
           customStyles: {
             container: { backgroundColor: '#b088f9' },
-            text: { color: 'black' }
-          }
+            text: { color: 'black' },
+          },
         };
       }
     }
     return result;
-  }
-
+  };
 
   return (
     <ViewPager style={styles.viewPager} initialPage={0}>
@@ -63,44 +67,42 @@ function CalenderPage({ navigation, route }) {
             markingType={'custom'}
             markedDates={handlePostedDays(posts)}
             theme={{
-              "stylesheet.calendar.header": {
+              'stylesheet.calendar.header': {
                 monthText: {
                   fontSize: 30,
-                  fontWeight: "600",
+                  fontWeight: '600',
                   color: 'black',
                   margin: 20,
-                  fontFamily: 'CuteFontRegular'
-                }
+                  fontFamily: 'GothicRegular',
+                },
               },
               calendarBackground: '#ffffff',
-              textDayFontFamily: 'CuteFontRegular',
-              textDayHeaderFontFamily: 'CuteFontRegular',
-              textMonthFontFamily: 'CuteFontRegular',
+              textDayFontFamily: 'GothicRegular',
+              textDayHeaderFontFamily: 'GothicRegular',
+              textMonthFontFamily: 'GothicRegular',
               textDayFontSize: 20,
-
             }}
           />
           <View style={styles.subContainer}>
             <TouchableOpacity onPress={handleDirectBtn}>
-              <Image style={styles.icon} source={require('../assets/plus-solid.png')} />
+              <Image style={styles.icon} source={require('@assets/plus-solid.png')} />
             </TouchableOpacity>
           </View>
         </View>
       </View>
 
-      <View key="2" >
+      <View key="2">
         <PostListPage navigation={navigation} posts={posts} />
       </View>
     </ViewPager>
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
-    backgroundColor: '#ffffff'
+    backgroundColor: '#ffffff',
   },
   subContainer: {
     width: 40,
@@ -113,19 +115,18 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     marginBottom: 0,
     marginLeft: 'auto',
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
-    shadowOpacity: 0.20,
+    shadowOpacity: 0.2,
     shadowRadius: 4.65,
     elevation: 6,
   },
   calendar: {
     flex: 3,
-    paddingVertical: 30
-
+    paddingVertical: 30,
   },
   icon: {
     width: 30,
@@ -136,7 +137,6 @@ const styles = StyleSheet.create({
   viewPager: {
     flex: 1,
   },
-
-})
+});
 
 export default CalenderPage;

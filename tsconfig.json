@@ -19,6 +19,8 @@
       "@screens/*": ["screens/*"],
       "@assets/*": ["assets/*"],
       "@components/*": ["components/*"],
+      "@navigator/*": ["navigator/*"],
+      "@styles/*": ["styles/*"],
     }
   },
   "extends": "expo/tsconfig.base"

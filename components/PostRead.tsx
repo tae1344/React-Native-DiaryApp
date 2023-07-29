@@ -44,7 +44,6 @@ export default function PostRead(props: PropsType) {
 
   useEffect(() => {
     PostAPI.getOnePost(route.params.date, (data) => {
-      console.log('post >>> ', data);
       state.post = data;
     });
   }, []);

@@ -51,10 +51,10 @@ export default function PostWrite(props: PropsType) {
   useEffect(() => {
     if (route.params && route.params.post) {
       setTextInput(route.params.post.content);
-      state.mode = 'create';
+      state.mode = 'update';
       state.updateImageURL = route.params.post.imageURL;
     } else {
-      state.mode = 'update';
+      state.mode = 'create';
     }
   }, [route.params]);
 
@@ -75,7 +75,7 @@ export default function PostWrite(props: PropsType) {
 
   const renderConfirmButton = () => {
     return (
-      <TouchableOpacity onPress={handleSubmit}>
+      <TouchableOpacity onPress={handleSubmit} style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Image style={styles.icon} source={require('@assets/confirm.png')} />
       </TouchableOpacity>
     );
@@ -131,7 +131,6 @@ const styles = StyleSheet.create({
     width: 30,
     height: 25,
     marginHorizontal: 10,
-    marginTop: 20,
     tintColor: Colors.black.s200,
     resizeMode: 'center',
   },

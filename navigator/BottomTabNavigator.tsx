@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import PostListView from '@components/PostListView';
+import PostListView from '@screens/PostListPage';
 import CalenderPage from '@screens/CalenderPage';
 
 function BottomTabNavigator(props: any) {

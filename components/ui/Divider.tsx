@@ -13,10 +13,6 @@ type PropsType = {
 };
 
 const Divider = (props: PropsType) => {
-  useEffect(() => {
-    console.log('props ', props);
-  }, [props]);
-
   return (
     <View
       style={[

@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, View, StyleSheet, Text, Image } from 'react-native';
-import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
-import ViewPager from '@react-native-community/viewpager';
-import PostListPage from '@components/PostListView';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Calendar } from 'react-native-calendars';
 import PostAPI from '@api/PostAPI';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from 'react-native-screens/native-stack';
 import { RootStackParamList } from '@/types/NavigatorTypes';
+import Typography from '@components/typography/Typography';
+import { DayProps } from 'react-native-calendars/src/calendar/day';
+import Day from '@components/calendar/Day';
+import { DateTimeFormatter, LocalDate } from '@js-joda/core';
+import { Colors } from '@/styles';
 
 type PropsType = NativeStackNavigationProp<RootStackParamList, 'MainTab'> & {};
 
@@ -20,8 +23,6 @@ function CalenderPage(props: PropsType) {
   useEffect(() => {
     PostAPI.getPosts(setPosts);
   }, []);
-
-  console.log('posts ::', posts);
 
   const handleDayPress = async (day) => {
     if (posts && day.dateString in posts) {
@@ -46,55 +47,53 @@ function CalenderPage(props: PropsType) {
     if (posts) {
       for (const key in posts) {
         result[posts[key].date] = {
-          selected: true,
-          marked: true,
+          post: posts[key],
           customStyles: {
-            container: { backgroundColor: '#b088f9' },
+            container: { backgroundColor: '#b088f9', width: '90%', height: 5, borderRadius: 3, alignSelf: 'center' },
             text: { color: 'black' },
           },
         };
       }
     }
+
+    // today
+    const today = LocalDate.now().format(DateTimeFormatter.ofPattern('yyyy-MM-dd')).toString();
+    result[today] = {
+      customStyles: {
+        container: { backgroundColor: Colors.blue.s100, width: '90%', height: 5, borderRadius: 3, alignSelf: 'center' },
+        text: { color: 'black' },
+      },
+    };
+
     return result;
   };
 
-  return (
-    <ViewPager style={styles.viewPager} initialPage={0}>
-      <View key="1" style={styles.container}>
-        <View style={styles.calendar}>
-          <Calendar
-            onDayPress={handleDayPress}
-            markingType={'custom'}
-            markedDates={handlePostedDays(posts)}
-            theme={{
-              'stylesheet.calendar.header': {
-                monthText: {
-                  fontSize: 30,
-                  fontWeight: '600',
-                  color: 'black',
-                  margin: 20,
-                  fontFamily: 'GothicRegular',
-                },
-              },
-              calendarBackground: '#ffffff',
-              textDayFontFamily: 'GothicRegular',
-              textDayHeaderFontFamily: 'GothicRegular',
-              textMonthFontFamily: 'GothicRegular',
-              textDayFontSize: 20,
-            }}
-          />
-          <View style={styles.subContainer}>
-            <TouchableOpacity onPress={handleDirectBtn}>
-              <Image style={styles.icon} source={require('@assets/plus-solid.png')} />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
+  const renderCustomDay = (dayProps: DayProps, date) => {
+    return <Day dayProps={dayProps} />;
+  };
 
-      <View key="2">
-        <PostListPage navigation={navigation} posts={posts} />
+  return (
+    <View key="1" style={styles.container}>
+      <View style={styles.calendar}>
+        <Calendar
+          style={{}}
+          onDayPress={handleDayPress}
+          markingType={'custom'}
+          markedDates={handlePostedDays(posts)}
+          theme={{
+            contentStyle: {
+              margin: 5,
+            },
+          }}
+          dayComponent={renderCustomDay}
+        />
+        <TouchableOpacity onPress={handleDirectBtn} style={styles.todayButton}>
+          <Typography size={20} bold color={Colors.white.s100}>
+            오늘 일기 작성하기
+          </Typography>
+        </TouchableOpacity>
       </View>
-    </ViewPager>
+    </View>
   );
 }
 
@@ -104,18 +103,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#ffffff',
   },
-  subContainer: {
-    width: 40,
+  todayButton: {
+    width: '50%',
     height: 40,
-    backgroundColor: '#fff',
-    borderRadius: 10,
+    backgroundColor: Colors.blue.s200,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 30,
     marginRight: 'auto',
-    marginBottom: 0,
     marginLeft: 'auto',
-    shadowColor: '#000',
+    shadowColor: Colors.black.s100,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -133,9 +131,6 @@ const styles = StyleSheet.create({
     height: 30,
     tintColor: '#bc6ff1',
     resizeMode: 'center',
-  },
-  viewPager: {
-    flex: 1,
   },
 });
 
